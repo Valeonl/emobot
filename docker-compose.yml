@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  senti-bot:
+    container_name: senti-bot
+    working_dir: /app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python main.py"
