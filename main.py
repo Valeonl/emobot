@@ -1,11 +1,11 @@
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from core.handlers.basic import get_voice
+from core.handlers.basic import get_voice, get_text
 from core.settings import settings
 import asyncio
 from aiogram.types import Message
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 
 dp = Dispatcher()
 
@@ -18,7 +18,7 @@ async def stop_bot(bot: Bot):
     """Функция отправки сообщения админу бота о его остановке"""
     await bot.send_message(settings.bots.admin_id, text="СмайлБот отстановлен")
 
-@dp.message(F.text, Command("start"))
+@dp.message(CommandStart())
 async def get_start(message: Message, bot: Bot):
     """Функция при отправке боту сообщения /start"""
     await message.reply(f"Привет, *{message.from_user.first_name}*\!\nОтправь любое голосовое сообщение и наш бот выполнит для него эмодзи-разметку\!")
@@ -30,8 +30,8 @@ async def start():
     # Функция бота при его остановке
     dp.shutdown.register(stop_bot)
     dp.message.register(get_voice, F.voice)
-    # Функция бота при отправки ему сообщения
-    # dp.message.register(get_start, F.text)
+    # Функция бота при отправки ему текстового сообщения
+    dp.message.register(get_text, F.text)
     try:
         print("Бот запущен")
         await dp.start_polling(bot)
