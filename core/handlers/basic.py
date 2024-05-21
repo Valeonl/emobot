@@ -5,10 +5,25 @@ from core.backend.audio_handler import save_voice_to_file, voice_to_text, text_t
 import re
 
 
+async def get_text(message: Message, bot: Bot):
+    """Функция для получения текстовых сообщений пользователя"""
+    await message.answer("Вы прислали текстовое сообщение\! Сейчас наш бот расставит в нём смайлики\!")
+    user_message = message.text
+    final_result = user_message
+    forward_date = message.date
+    formatted_date = forward_date.strftime("%Y-%m-%d")
+    formatted_time = forward_date.strftime("%H:%M:%S")
+    final_result = await add_emoji_to_text(final_result)
+    print(final_result)
+    final_result = re.escape(final_result)
+    print(final_result)
+    print(f"{formatted_date} {formatted_time} | Получено аудиосообщение от {message.from_user.username} ({message.from_user.id}):\nТекст сообщения: '{final_result}'")
+    await message.reply(text=f"`{final_result}`\n\n\(*нажмите на получившийся текст, чтобы его скопировать*\)")
+
 async def get_voice(message: Message, bot:Bot):
     """Функция для получения голосовых сообщений пользователя"""
     await message.answer("Вы прислали аудиофайл\! Сейчас наш бот переведёт его в текст и расставит смайлики\!")
-    print(f"{message.from_user.username} ({message.from_user.id} отправил голосовое сообщение!")
+    print(f"{message.from_user.username} ({message.from_user.id}) отправил голосовое сообщение!")
     voice_path = await save_voice_to_file(bot, message)
     transcript_voice_text_with_google = await voice_to_text(voice_path)
     if transcript_voice_text_with_google == "error":
